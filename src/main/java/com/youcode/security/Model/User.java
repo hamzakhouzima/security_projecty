@@ -7,7 +7,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -35,11 +37,20 @@ public class User implements UserDetails {
 
 //    @ManyToOne
 //    @JoinColumn(name = "role_id")
-    @Column(name = "Role")
-    private Roles role;
+private Set<Roles> roles = new HashSet<>();
+
 
     public User() {
 
+    }
+
+
+    public void addRole(Roles role) {
+        roles.add(role);
+    }
+
+    public boolean hasRole(Roles role) {
+        return roles.contains(role);
     }
 
     @Override

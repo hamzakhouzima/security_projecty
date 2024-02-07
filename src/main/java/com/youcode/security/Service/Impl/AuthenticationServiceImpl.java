@@ -26,6 +26,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @Service
 @RequiredArgsConstructor
@@ -52,7 +53,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         var user = User.builder()
                 .username(request.getUsername())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(defaultRole)
+                .roles(Collections.singleton(defaultRole))
                 .build();
 
         userRepository.save(user);
@@ -68,26 +69,22 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         try {
             logger.info("Attempting to authenticate user: {}", request.getUsername());
 
-            // Authenticate the user
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
             );
 
             logger.info("User {} authenticated successfully", request.getUsername());
 
-            // Retrieve the user from the repository
             User user = userRepository.findUserByUsername(request.getUsername())
                     .orElseThrow(() -> {
                         logger.error("User not found: {}", request.getUsername());
                         return new UsernameNotFoundException("User not found");
                     });
 
-            // Generate JWT token
             String jwtToken = jwtService.generateToken(user);
 
             logger.info("JWT token generated successfully for user: {}", request.getUsername());
 
-            // Return authentication response with token
             return AuthenticationResponse.builder().token(jwtToken).build();
         } catch (AuthenticationException e) {
             logger.error("Authentication failed for user: {}", request.getUsername(), e);
