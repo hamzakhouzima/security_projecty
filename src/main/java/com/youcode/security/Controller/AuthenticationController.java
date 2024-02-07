@@ -1,5 +1,6 @@
 package com.youcode.security.Controller;
 
+//import com.youcode.security.Security.JwtService;
 import com.youcode.security.Service.AuthenticationService;
 import com.youcode.security.dto.Request.AuthenticationRequest;
 import com.youcode.security.dto.Request.RegisterRequest;
@@ -17,15 +18,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
+//    private final JwtService JwtService ;
 
     @PostMapping("/super/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request){
         return ResponseEntity.ok(authenticationService.register(request));
     }
 
-    @PostMapping("/authenticate")
+    @PostMapping("/super/authenticate")
     public ResponseEntity<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request){
-        return ResponseEntity.ok(authenticationService.authenticate(request));
+        try{
+            return ResponseEntity.ok(authenticationService.authenticate(request));
+
+
+        }catch(Exception e){
+            return ResponseEntity.status(500).build();
+        }
     }
 
     @GetMapping("/test")
